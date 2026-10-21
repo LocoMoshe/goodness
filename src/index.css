@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Sunrise */
+@layer base {
+  :root {
+    --background: 31 100% 97%;
+    --foreground: 15 15% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 15 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 15 15% 15%;
+    --primary: 14 73% 44%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 31 60% 92%;
+    --secondary-foreground: 15 15% 15%;
+    --muted: 31 60% 92%;
+    --muted-foreground: 22 9% 39%;
+    --accent: 31 60% 92%;
+    --accent-foreground: 15 15% 15%;
+    --destructive: 3 71% 41%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 50% 89%;
+    --input: 30 50% 89%;
+    --ring: 14 73% 44%;
+    --radius: 1.25rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-sun-bg text-sun-text font-sunrise antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .sun-card {
+    @apply bg-sun-surface border border-sun-line rounded-[20px] shadow-[0_1px_3px_rgba(43,35,32,0.06)];
+  }
+  .sun-button {
+    @apply bg-sun-accent text-white font-extrabold rounded-full min-h-[52px] px-5 inline-flex items-center justify-center gap-2 transition active:scale-[0.98] disabled:opacity-50;
+  }
+  .sun-button-ghost {
+    @apply bg-sun-surface text-sun-text border border-sun-line font-bold rounded-full min-h-[52px] px-5 inline-flex items-center justify-center gap-2 transition active:scale-[0.98] disabled:opacity-50;
+  }
+  .sun-input {
+    @apply w-full bg-sun-surface border-2 border-sun-line focus:border-sun-accent outline-none rounded-2xl px-4 min-h-[56px] text-lg text-sun-text placeholder:text-sun-muted;
+  }
+  .sun-chip {
+    @apply min-h-[40px] px-4 rounded-full border border-sun-line text-sm font-bold inline-flex items-center justify-center transition;
+  }
+  .sun-label {
+    @apply text-sm text-sun-muted;
+  }
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-top {
+    padding-top: max(1.5rem, env(safe-area-inset-top));
+  }
+}
