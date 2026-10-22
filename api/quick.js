@@ -24,6 +24,10 @@ export default async function handler(req, res) {
       body = Object.fromEntries(new URLSearchParams(body));
     }
   }
+  // accept field names in any case ("Key", "TEXT", ...)
+  if (body && typeof body === 'object') {
+    body = Object.fromEntries(Object.entries(body).map(([k, v]) => [String(k).trim().toLowerCase(), v]));
+  }
   const key = pick(body, 'key', 'k') || String(req.headers['x-goodness-key'] || '').trim();
   const text = pick(body, 'text', 't', 'deed');
   if (!key) {
