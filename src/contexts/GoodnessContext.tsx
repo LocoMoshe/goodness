@@ -56,6 +56,7 @@ interface GoodnessContextType {
   closeQuickLog: () => void;
   shakeOn: boolean;
   shakeAvailable: boolean;
+  motionAlive: boolean;
   enableShake: () => Promise<boolean>;
   disableShake: () => void;
 }
@@ -104,21 +105,27 @@ export const GoodnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [session, refresh]);
 
-  // iPhone forgets motion permission between visits: re-ask silently on the first tap
+  // iPhone forgets motion permission every time the app opens. It only lets us ask
+  // again during a real tap (touchend/click, not touchstart), so re-ask on the first one.
+  const [motionAlive, setMotionAlive] = useState(false);
   useEffect(() => {
-    if (!shakeOn || !shakeNeedsPermission()) return;
-    const once = () => {
+    if (!shakeOn || !shakeNeedsPermission() || motionAlive) return;
+    const ask = () => {
       requestShakePermission();
-      window.removeEventListener('pointerdown', once);
     };
-    window.addEventListener('pointerdown', once);
-    return () => window.removeEventListener('pointerdown', once);
-  }, [shakeOn]);
+    window.addEventListener('touchend', ask);
+    window.addEventListener('click', ask);
+    return () => {
+      window.removeEventListener('touchend', ask);
+      window.removeEventListener('click', ask);
+    };
+  }, [shakeOn, motionAlive]);
 
   const openQuickLog = useCallback(() => setQuickLogOpen(true), []);
   const closeQuickLog = useCallback(() => setQuickLogOpen(false), []);
 
-  useShake(openQuickLog, shakeOn && !!session && !quickLogOpen);
+  const markAlive = useCallback(() => setMotionAlive(true), []);
+  useShake(openQuickLog, shakeOn && !!session && !quickLogOpen, markAlive);
 
   const enableShake = async () => {
     const ok = await requestShakePermission();
@@ -149,6 +156,7 @@ export const GoodnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         closeQuickLog,
         shakeOn,
         shakeAvailable: shakeSupported(),
+        motionAlive,
         enableShake,
         disableShake,
       }}

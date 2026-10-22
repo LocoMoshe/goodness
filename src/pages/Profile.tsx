@@ -19,7 +19,8 @@ interface DeedRow {
 }
 
 const Profile: React.FC = () => {
-  const { stats, refresh, signOut, shakeOn, shakeAvailable, enableShake, disableShake, session } = useGoodness();
+  const { stats, refresh, signOut, shakeOn, shakeAvailable, motionAlive, enableShake, disableShake, session } = useGoodness();
+  const [shakeDenied, setShakeDenied] = useState(false);
   const [deeds, setDeeds] = useState<DeedRow[]>([]);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState('');
@@ -148,9 +149,24 @@ const Profile: React.FC = () => {
             <div className="p-4 flex items-center justify-between gap-4">
               <div>
                 <p className="font-semibold">Shake to log</p>
-                <p className="text-sm text-sun-muted">Shake your phone to open quick log</p>
+                <p className="text-sm text-sun-muted">
+                  {shakeDenied
+                    ? 'Your phone blocked motion. Close the app fully, reopen it and switch this on again.'
+                    : !shakeOn
+                      ? 'Shake your phone to open quick log'
+                      : motionAlive
+                        ? 'Ready. Give your phone 3 quick shakes.'
+                        : 'Tap anywhere once to wake the shake sensor.'}
+                </p>
               </div>
-              <Switch checked={shakeOn} onCheckedChange={(on) => (on ? enableShake() : disableShake())} aria-label="Shake to log" />
+              <Switch
+                checked={shakeOn}
+                onCheckedChange={async (on) => {
+                  if (!on) return disableShake();
+                  setShakeDenied(!(await enableShake()));
+                }}
+                aria-label="Shake to log"
+              />
             </div>
           )}
           <div className="p-4 flex items-center justify-between gap-4">
