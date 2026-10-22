@@ -83,7 +83,6 @@ export function useShake(onShake: () => void, enabled: boolean, onAlive?: () => 
       if (hits.length >= 3 && now - lastFired > 2500) {
         lastFired = now;
         hits = [];
-        if (navigator.vibrate) navigator.vibrate(40);
         cb.current();
       }
     };

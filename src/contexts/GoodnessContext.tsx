@@ -9,6 +9,7 @@ import {
   shakeSupported,
   useShake,
 } from '@/hooks/useShake';
+import { shakeFeedback, unlockSound } from '@/lib/feedback';
 
 export type Category = 'Environmental' | 'Social Good' | 'Charitable' | 'Educational' | 'Personal Help';
 export type Impact = 'Low' | 'Medium' | 'High';
@@ -121,13 +122,29 @@ export const GoodnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }, [shakeOn, motionAlive]);
 
+  // Sound needs a tap before it can play; keep it awake on every tap while shake is on
+  useEffect(() => {
+    if (!shakeOn) return;
+    window.addEventListener('touchend', unlockSound);
+    window.addEventListener('click', unlockSound);
+    return () => {
+      window.removeEventListener('touchend', unlockSound);
+      window.removeEventListener('click', unlockSound);
+    };
+  }, [shakeOn]);
+
   const openQuickLog = useCallback(() => setQuickLogOpen(true), []);
+  const openFromShake = useCallback(() => {
+    shakeFeedback();
+    setQuickLogOpen(true);
+  }, []);
   const closeQuickLog = useCallback(() => setQuickLogOpen(false), []);
 
   const markAlive = useCallback(() => setMotionAlive(true), []);
-  useShake(openQuickLog, shakeOn && !!session && !quickLogOpen, markAlive);
+  useShake(openFromShake, shakeOn && !!session && !quickLogOpen, markAlive);
 
   const enableShake = async () => {
+    unlockSound();
     const ok = await requestShakePermission();
     setShakeEnabledPref(ok);
     setShakeOn(ok);
