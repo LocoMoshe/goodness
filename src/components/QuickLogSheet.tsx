@@ -25,7 +25,7 @@ const SIZES: { impact: Impact; label: string; reward: string; hint: string }[] =
 type Done = { impact: Impact; token: string | null };
 
 const QuickLogSheet: React.FC = () => {
-  const { quickLogOpen, closeQuickLog, refresh, session, stats } = useGoodness();
+  const { quickLogOpen, closeQuickLog, refresh, session, stats, draft } = useGoodness();
   const [text, setText] = useState('');
   const [category, setCategory] = useState<Category>('Personal Help');
   const [pickedCategory, setPickedCategory] = useState(false);
@@ -41,7 +41,7 @@ const QuickLogSheet: React.FC = () => {
 
   useEffect(() => {
     if (quickLogOpen) {
-      setText('');
+      setText(draft?.description ?? '');
       setCategory('Personal Help');
       setPickedCategory(false);
       setShowCategories(false);
@@ -52,7 +52,7 @@ const QuickLogSheet: React.FC = () => {
       setCopied(false);
       setTimeout(() => inputRef.current?.focus(), 150);
     }
-  }, [quickLogOpen]);
+  }, [quickLogOpen, draft]);
 
   useEffect(() => {
     if (!pickedCategory) setCategory(guessCategory(text));
@@ -104,6 +104,7 @@ const QuickLogSheet: React.FC = () => {
         p_image_url: imageUrl,
       });
       if (rpcErr) throw rpcErr;
+      if (draft) await supabase.from('deed_drafts').delete().eq('id', draft.id);
       const res = data as { witness_token: string };
       setDone({ impact, token: impact === 'Low' ? null : res.witness_token });
       refresh();

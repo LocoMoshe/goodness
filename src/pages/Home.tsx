@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Bell, Smartphone } from 'lucide-react';
+import { ArrowRight, Bell, Smartphone, X } from 'lucide-react';
 import { format } from 'date-fns';
 import MainLayout from '@/components/MainLayout';
 import Logo from '@/components/Logo';
-import { useGoodness } from '@/contexts/GoodnessContext';
+import { useGoodness, type Draft } from '@/contexts/GoodnessContext';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DeedRow {
@@ -26,7 +26,8 @@ export const deedStatusLine = (d: DeedRow) => {
 const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 const Home: React.FC = () => {
-  const { stats, unread, openQuickLog, shakeOn, shakeAvailable, enableShake } = useGoodness();
+  const { stats, unread, openQuickLog, openDraft, shakeOn, shakeAvailable, enableShake } = useGoodness();
+  const [drafts, setDrafts] = useState<Draft[]>([]);
   const [recent, setRecent] = useState<DeedRow[]>([]);
   const [shakeMsg, setShakeMsg] = useState<string | null>(null);
 
@@ -38,6 +39,19 @@ const Home: React.FC = () => {
       .limit(3)
       .then(({ data }) => setRecent((data as DeedRow[]) ?? []));
   }, [stats]);
+
+  useEffect(() => {
+    supabase
+      .from('deed_drafts')
+      .select('id, description, created_at')
+      .order('created_at', { ascending: true })
+      .then(({ data }) => setDrafts((data as Draft[]) ?? []));
+  }, [stats]);
+
+  const dropDraft = async (id: string) => {
+    setDrafts((ds) => ds.filter((d) => d.id !== id));
+    await supabase.from('deed_drafts').delete().eq('id', id);
+  };
 
   const todayIndex = (new Date().getDay() + 6) % 7;
 
@@ -95,6 +109,35 @@ const Home: React.FC = () => {
           <span>{shakeOn ? 'Shake or tap to log' : 'Tap to log a deed'}</span>
           <ArrowRight size={24} strokeWidth={2.2} />
         </button>
+
+        {drafts.length > 0 && (
+          <section className="sun-card p-4 flex flex-col gap-3" aria-label="Quick notes to finish">
+            <div>
+              <p className="font-semibold">
+                {drafts.length} quick note{drafts.length === 1 ? '' : 's'} to finish
+              </p>
+              <p className="text-sm text-sun-muted">Pick a size so it can be verified</p>
+            </div>
+            {drafts.map((d) => (
+              <div key={d.id} className="flex items-center gap-2 border-t border-sun-line pt-3">
+                <button onClick={() => openDraft(d)} className="flex-1 min-w-0 text-left min-h-[44px]">
+                  <p className="font-semibold truncate">{d.description}</p>
+                  <p className="text-sm text-sun-muted">{format(new Date(d.created_at), 'd MMM, HH:mm')}</p>
+                </button>
+                <button onClick={() => openDraft(d)} className="sun-chip bg-sun-accent text-white border-sun-accent">
+                  Finish
+                </button>
+                <button
+                  onClick={() => dropDraft(d.id)}
+                  aria-label={`Delete note: ${d.description}`}
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-sun-muted"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            ))}
+          </section>
+        )}
 
         {shakeAvailable && !shakeOn && (
           <div className="sun-card p-4 flex items-start gap-3">

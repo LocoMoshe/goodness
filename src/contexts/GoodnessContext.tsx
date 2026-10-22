@@ -22,6 +22,12 @@ export const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'Social Good', label: 'Community' },
 ];
 
+export interface Draft {
+  id: string;
+  description: string;
+  created_at: string;
+}
+
 export const categoryLabel = (c: Category) => CATEGORIES.find((x) => x.value === c)?.label ?? c;
 
 export interface Stats {
@@ -54,6 +60,8 @@ interface GoodnessContextType {
   signOut: () => Promise<void>;
   quickLogOpen: boolean;
   openQuickLog: () => void;
+  draft: Draft | null;
+  openDraft: (d: Draft) => void;
   closeQuickLog: () => void;
   shakeOn: boolean;
   shakeAvailable: boolean;
@@ -70,6 +78,7 @@ export const GoodnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [stats, setStats] = useState<Stats | null>(null);
   const [unread, setUnread] = useState(0);
   const [quickLogOpen, setQuickLogOpen] = useState(false);
+  const [draft, setDraft] = useState<Draft | null>(null);
   const [shakeOn, setShakeOn] = useState<boolean>(() => shakeEnabledPref());
 
   const refresh = useCallback(async () => {
@@ -133,9 +142,17 @@ export const GoodnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }, [shakeOn]);
 
-  const openQuickLog = useCallback(() => setQuickLogOpen(true), []);
+  const openQuickLog = useCallback(() => {
+    setDraft(null);
+    setQuickLogOpen(true);
+  }, []);
+  const openDraft = useCallback((d: Draft) => {
+    setDraft(d);
+    setQuickLogOpen(true);
+  }, []);
   const openFromShake = useCallback(() => {
     shakeFeedback();
+    setDraft(null);
     setQuickLogOpen(true);
   }, []);
   const closeQuickLog = useCallback(() => setQuickLogOpen(false), []);
@@ -169,6 +186,8 @@ export const GoodnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         refresh,
         signOut,
         quickLogOpen,
+        draft,
+        openDraft,
         openQuickLog,
         closeQuickLog,
         shakeOn,

@@ -6,6 +6,7 @@ import { useGoodness } from '@/contexts/GoodnessContext';
 import { supabase, errorMessage } from '@/integrations/supabase/client';
 import { Switch } from '@/components/ui/switch';
 import { deedStatusLine } from './Home';
+import QuickLogSetup from '@/components/QuickLogSetup';
 
 interface DeedRow {
   id: string;
@@ -177,6 +178,8 @@ const Profile: React.FC = () => {
             <Switch checked={!!stats?.is_public} onCheckedChange={(on) => updateProfile({ is_public: on })} aria-label="Show me on the leaderboard" />
           </div>
         </section>
+
+        <QuickLogSetup />
 
         <details className="sun-card p-4 text-sm text-sun-muted">
           <summary className="font-semibold text-sun-text cursor-pointer min-h-[32px] flex items-center gap-2"><Shield size={16} className="text-sun-accent" /> How trust works</summary>
