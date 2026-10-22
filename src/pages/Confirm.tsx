@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
+import Logo from '@/components/Logo';
 import { supabase, errorMessage } from '@/integrations/supabase/client';
 
 interface WitnessDeed { description: string; author: string; confirmed: boolean; status: string }
@@ -35,9 +36,7 @@ const Confirm: React.FC = () => {
   return (
     <div className="min-h-screen bg-sun-bg flex flex-col justify-center px-6 safe-top safe-bottom">
       <div className="w-full max-w-sm mx-auto flex flex-col gap-6">
-        <div className="w-14 h-14 rounded-2xl bg-sun-accent flex items-center justify-center">
-          <Heart size={28} className="text-white" strokeWidth={2.4} />
-        </div>
+        <Logo size={52} />
 
         {loading && <p className="text-sun-muted">Loading…</p>}
         {error && <p className="text-sun-danger text-lg">{error}</p>}
@@ -45,9 +44,9 @@ const Confirm: React.FC = () => {
         {deed && !deed.confirmed && !declined && (
           <>
             <h1 className="text-3xl font-bold leading-tight">Did {deed.author} help you?</h1>
-            <p className="text-sm text-sun-muted">{deed.author} logged this on Goodness:</p>
+            <p className="text-sm text-sun-muted">{deed.author} logged this on Goodness Tribe:</p>
             <p className="sun-card p-5 text-xl font-semibold">"{deed.description}"</p>
-            <p className="text-sun-muted">If it really happened, confirm it. This helps keep Goodness honest.</p>
+            <p className="text-sun-muted">If it really happened, confirm it. This helps keep Goodness Tribe honest.</p>
             <button onClick={confirm} disabled={busy} className="sun-button w-full text-lg">
               {busy ? 'Confirming…' : 'Yes, this happened'}
             </button>
@@ -75,7 +74,7 @@ const Confirm: React.FC = () => {
         )}
 
         {(deed?.confirmed || declined) && (
-          <Link to="/auth" className="sun-button-ghost w-full">Do good too: join Goodness</Link>
+          <Link to="/auth" className="sun-button-ghost w-full">Do good too: join Goodness Tribe</Link>
         )}
       </div>
     </div>

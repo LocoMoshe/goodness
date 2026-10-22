@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Bell, Smartphone } from 'lucide-react';
 import { format } from 'date-fns';
 import MainLayout from '@/components/MainLayout';
+import Logo from '@/components/Logo';
 import { useGoodness } from '@/contexts/GoodnessContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -49,7 +50,7 @@ const Home: React.FC = () => {
     <MainLayout>
       <div className="px-6 safe-top flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <p className="text-sun-muted">{format(new Date(), 'EEEE, d MMM')}</p>
+          <Logo size={36} />
           <Link
             to="/notifications"
             aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'}

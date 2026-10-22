@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import Logo from '@/components/Logo';
 import { supabase, errorMessage } from '@/integrations/supabase/client';
 
 const Auth: React.FC = () => {
@@ -40,9 +40,7 @@ const Auth: React.FC = () => {
     <div className="min-h-screen bg-sun-bg flex flex-col justify-center px-6 safe-top safe-bottom">
       <div className="w-full max-w-sm mx-auto flex flex-col gap-8">
         <div className="flex flex-col gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-sun-accent flex items-center justify-center">
-            <Heart size={28} className="text-white" strokeWidth={2.4} />
-          </div>
+          <Logo size={56} />
           <h1 className="text-4xl font-bold leading-tight">
             {mode === 'signin' ? 'Welcome back.' : 'Do good. Get it seen.'}
           </h1>

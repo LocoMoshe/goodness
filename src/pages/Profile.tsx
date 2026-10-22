@@ -57,7 +57,7 @@ const Profile: React.FC = () => {
 
   const askConfirm = async (d: DeedRow) => {
     const link = `${window.location.origin}/confirm/${d.witness_token}`;
-    const text = `Hey! I logged helping you on Goodness. Could you tap this to confirm it happened? ${link}`;
+    const text = `Hey! I logged helping you on Goodness Tribe. Could you tap this to confirm it happened? ${link}`;
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Confirm my good deed', text, url: link });

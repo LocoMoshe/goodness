@@ -117,7 +117,7 @@ const QuickLogSheet: React.FC = () => {
   const confirmLink = done?.token ? `${window.location.origin}/confirm/${done.token}` : '';
 
   const share = async () => {
-    const message = `Hey! I just logged helping you on Goodness. Could you tap this to confirm it happened? ${confirmLink}`;
+    const message = `Hey! I just logged helping you on Goodness Tribe. Could you tap this to confirm it happened? ${confirmLink}`;
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Confirm my good deed', text: message, url: confirmLink });
